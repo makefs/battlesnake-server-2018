@@ -4,7 +4,8 @@ defmodule Bs.GameState do
   alias Bs.Snake
   alias Bs.World
 
-  @max_history 20
+  @default_max_history 20
+  @max_history Application.get_env(:bs, :max_history, 20)
 
   @statuses [:cont, :replay, :halted, :suspend]
 
@@ -140,7 +141,13 @@ defmodule Bs.GameState do
   end
 
   defp save_history(%{world: h} = state) do
-    update_in(state.hist, fn t -> [h | Enum.take(t, @max_history)] end)
+    max_history =
+      case Integer.parse(@max_history) do
+        {val, _} -> val
+        :error -> @default_max_history
+      end
+
+    update_in(state.hist, fn t -> [h | Enum.take(t, max_history)] end)
   end
 
   defp who_died_last(state) do

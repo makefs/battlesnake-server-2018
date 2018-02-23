@@ -15,6 +15,8 @@ config :bs, BsWeb.Endpoint,
 
 config :bs, start_timeout: 10_000
 
+config :bs, :max_history, System.get_env("MAX_HISTORY")
+
 config :bs, :http, HTTPoison
 
 config :bs, ecto_repos: [BsRepo]
