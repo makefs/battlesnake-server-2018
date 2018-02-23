@@ -1,4 +1,4 @@
-module Game.State exposing (init, update, subscriptions)
+module Game.State exposing (init, subscriptions, update)
 
 import Char
 import Debug exposing (..)
@@ -28,7 +28,7 @@ init { websocket, gameid } =
             [ emit JoinGameChannel
             ]
     in
-        model ! cmds
+    model ! cmds
 
 
 subscriptions : Model -> Sub Msg
@@ -46,13 +46,13 @@ update msg model =
             "game:" ++ model.gameid
 
         decodeTick raw =
-            case decodeValue Decoder.tick raw of
+            case decodeValue Decoder.tickDecoder raw of
                 Ok gameState ->
                     { model | gameState = Just gameState }
                         ! [ GameBoard.render raw ]
 
                 Err e ->
-                    Debug.crash e
+                    Debug.crash (JE.encode 4 raw)
 
         updateBroadcast cmd =
             case cmd of
@@ -99,28 +99,28 @@ update msg model =
                 PrevStep ->
                     push topic "prev" model
     in
-        case msg of
-            Push msg ->
-                updatePush msg
+    case msg of
+        Push msg ->
+            updatePush msg
 
-            Broadcast msg ->
-                updateBroadcast msg
+        Broadcast msg ->
+            updateBroadcast msg
 
-            KeyDown code ->
-                updateKeyDown code
+        KeyDown code ->
+            updateKeyDown code
 
-            PhxMsg msg ->
-                Socket.update msg model.socket
-                    |> pushCmd model
+        PhxMsg msg ->
+            Socket.update msg model.socket
+                |> pushCmd model
 
-            JoinGameChannel ->
-                joinChannel topic model
+        JoinGameChannel ->
+            joinChannel topic model
 
-            JoinChannelSuccess _ ->
-                model ! []
+        JoinChannelSuccess _ ->
+            model ! []
 
-            JoinChannelFailed error ->
-                Debug.crash (toString error)
+        JoinChannelFailed error ->
+            Debug.crash (toString error)
 
 
 emit : msg -> Cmd msg
@@ -137,9 +137,9 @@ socket url gameid =
         model =
             { gameid = gameid }
     in
-        Socket.init url
-            |> Socket.on "tick" topic (Broadcast << RecieveTick)
-            |> Socket.on "lobbyinfo" topic (Broadcast << LobbyInfo)
+    Socket.init url
+        |> Socket.on "tick" topic (Broadcast << RecieveTick)
+        |> Socket.on "lobbyinfo" topic (Broadcast << LobbyInfo)
 
 
 {-| Push a command to a topic which will be handled by
@@ -162,14 +162,14 @@ joinChannel : String -> Model -> ( Model, Cmd Msg )
 joinChannel channel model =
     let
         payload =
-            (JE.object [ ( "id", JE.string model.gameid ) ])
+            JE.object [ ( "id", JE.string model.gameid ) ]
     in
-        Channel.init channel
-            |> Channel.withPayload payload
-            |> Channel.onJoin JoinChannelSuccess
-            |> Channel.onJoinError JoinChannelFailed
-            |> flip Socket.join model.socket
-            |> pushCmd model
+    Channel.init channel
+        |> Channel.withPayload payload
+        |> Channel.onJoin JoinChannelSuccess
+        |> Channel.onJoinError JoinChannelFailed
+        |> flip Socket.join model.socket
+        |> pushCmd model
 
 
 phxMsg : Cmd PhxSockMsg -> Cmd Msg

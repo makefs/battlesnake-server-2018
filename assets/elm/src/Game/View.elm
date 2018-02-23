@@ -1,99 +1,16 @@
 module Game.View exposing (..)
 
 import Css exposing (..)
+import Game.BoardView
 import Game.Types exposing (..)
 import Html.Styled exposing (..)
 import Html.Styled.Attributes as Attr exposing (..)
 import Html.Styled.Events exposing (..)
 import Md exposing (..)
 import Route exposing (..)
+import Scale exposing (..)
+import Theme exposing (..)
 import Types exposing (..)
-
-
-assets : { logoAdvanced : String, logoLight : String }
-assets =
-    { logoAdvanced = "/images/division-advanced.svg"
-    , logoLight = "/images/bs-logo-light.svg"
-    }
-
-
-pallet :
-    { blue : Color
-    , grey : Color
-    , lightgrey : Color
-    , pink : Color
-    , white : Color
-    , yellow : Color
-    }
-pallet =
-    { white = hex "#fcfcfc"
-    , lightgrey = hex "#e8e8e8"
-    , pink = hex "#f7567c"
-    , yellow = hex "#fffae3"
-    , blue = hex "#99e1d9"
-    , grey = hex "#5d576b"
-    }
-
-
-ms : Float -> Px
-ms number =
-    Css.px (16 * (1.5 ^ number))
-
-
-ms_3 : Px
-ms_3 =
-    ms -3
-
-
-ms_2 : Px
-ms_2 =
-    ms -2
-
-
-ms_1 : Px
-ms_1 =
-    ms -1
-
-
-ms0 : Px
-ms0 =
-    ms 0
-
-
-ms1 : Px
-ms1 =
-    ms 1
-
-
-ms2 : Px
-ms2 =
-    ms 2
-
-
-ms3 : Px
-ms3 =
-    ms 3
-
-
-ms4 : Px
-ms4 =
-    ms 4
-
-
-theme =
-    { bgPrimary = pallet.grey
-    , bgSecondary = pallet.white
-    , sidebarPlayerHeight = ms 3
-    , buttonAccent = pallet.lightgrey
-    }
-
-
-sidebarTheme : Style
-sidebarTheme =
-    batch
-        [ backgroundColor theme.bgPrimary
-        , color theme.bgSecondary
-        ]
 
 
 view : Model -> Html Msg
@@ -102,25 +19,30 @@ view model =
         [ viewPort []
             [ column
                 [ css [ flex auto ] ]
-                [ board model
-                , div [ css [ alignSelf center ] ] [ text (turn model) ]
-                , avControls []
-                    [ btn
-                        [ onClick (Push PrevStep)
-                        , title "Previous turn (k)"
+                [ model.gameState
+                    |> Maybe.map .board
+                    |> Maybe.map Game.BoardView.view
+                    |> Maybe.withDefault (text "")
+                , column [ css [ flexGrow (int 0) ] ]
+                    [ div [ css [ alignSelf center ] ] [ text (turn model) ]
+                    , avControls []
+                        [ btn
+                            [ onClick (Push PrevStep)
+                            , title "Previous turn (k)"
+                            ]
+                            [ mdSkipPrev ]
+                        , btn
+                            [ onClick (Push StopGame)
+                            , title "Reset Game (q)"
+                            ]
+                            [ mdReplay ]
+                        , playPause model
+                        , btn
+                            [ onClick (Push NextStep)
+                            , title "Next turn (j)"
+                            ]
+                            [ mdSkipNext ]
                         ]
-                        [ mdSkipPrev ]
-                    , btn
-                        [ onClick (Push StopGame)
-                        , title "Reset Game (q)"
-                        ]
-                        [ mdReplay ]
-                    , playPause model
-                    , btn
-                        [ onClick (Push NextStep)
-                        , title "Next turn (j)"
-                        ]
-                        [ mdSkipNext ]
                     ]
                 ]
             , sidebar model
@@ -146,10 +68,28 @@ sidebar model =
         sidebarLogo =
             div [ css [ marginBottom ms0 ] ]
                 [ div []
-                    [ img [ src assets.logoLight ] []
+                    [ img
+                        [ src assets.logoLight
+                        , css
+                            [ Css.maxWidth (px 300)
+                            , Css.display Css.block
+                            , Css.marginLeft Css.auto
+                            , Css.marginRight Css.auto
+                            , Css.marginTop Css.zero
+                            , Css.marginBottom Css.zero
+                            ]
+                        ]
+                        []
                     , img
-                        [ src assets.logoAdvanced
-                        , css [ margin2 (px 0) ms4 ]
+                        [ src assets.logoExpert
+                        , css
+                            [ Css.maxHeight (px 100)
+                            , Css.display Css.block
+                            , Css.marginLeft Css.auto
+                            , Css.marginRight Css.auto
+                            , Css.marginTop Css.zero
+                            , Css.marginBottom ms2
+                            ]
                         ]
                         []
                     ]
@@ -171,8 +111,8 @@ sidebar model =
     column
         [ css
             [ padding ms1
+            , minWidth theme.sidebarWidth
             , justifyContent spaceBetween
-            , minWidth (px 300)
             , overflowWrap breakWord
             , sidebarTheme
             ]
@@ -189,6 +129,7 @@ sidebar model =
 snake : Bool -> Snake -> Html msg
 snake alive snake =
     let
+        -- _ = Debug.log "snake" snake
         healthbarWidth =
             if alive then
                 toString snake.health ++ "%"
@@ -213,7 +154,10 @@ snake alive snake =
         healthbar =
             div
                 [ style healthbarStyle
-                , css [ Css.height ms_3, transition ]
+                , css
+                    [ Css.height (px 15)
+                    , transition
+                    ]
                 ]
                 []
 
@@ -257,10 +201,8 @@ snake alive snake =
             ]
         , div
             [ css
-                [ displayFlex
-                , justifyContent spaceBetween
-                , maxWidth (px 250)
-                , Css.height (px 20)
+                [ maxWidth theme.sidebarWidth
+                , whiteSpace Css.noWrap
                 , textOverflow ellipsis
                 , overflow Css.hidden
                 ]

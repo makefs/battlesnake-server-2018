@@ -2,6 +2,7 @@ module Types exposing (..)
 
 import Dict exposing (..)
 import Json.Encode exposing (Value)
+import Math.Vector2 exposing (..)
 
 
 type Status
@@ -21,7 +22,9 @@ type alias Board =
     , snakes : List Snake
     , deadSnakes : List Snake
     , gameid : Int
-    , food : List Point
+    , food : List Vec2
+    , width : Int
+    , height : Int
     }
 
 
@@ -69,15 +72,23 @@ type alias Death =
     }
 
 
+type SnakeStatus
+    = Alive
+    | Dead
+    | ConnectionFailure
+
+
 type alias Snake =
     { death : Maybe Death
     , color : String
-    , coords : List Point
+    , coords : List Vec2
     , health : Int
     , id : String
     , name : String
     , taunt : Maybe String
     , headUrl : String
+    , headType : String
+    , tailType : String
     }
 
 

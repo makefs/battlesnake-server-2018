@@ -1,8 +1,10 @@
 module Decoder exposing (..)
 
-import Json.Decode exposing (..)
-import Types exposing (..)
 import Dict
+import Json.Decode exposing (..)
+import Json.Decode.Pipeline exposing (..)
+import Math.Vector2 exposing (..)
+import Types exposing (..)
 
 
 (:=) : String -> Decoder a -> Decoder a
@@ -15,28 +17,23 @@ import Dict
     at
 
 
-defaultHeadUrl : String
-defaultHeadUrl =
-    ""
-
-
 maybeWithDefault : a -> Decoder a -> Decoder a
 maybeWithDefault value decoder =
     decoder |> maybe |> map (Maybe.withDefault value)
 
 
-tick : Decoder GameState
-tick =
-    ("content" := gameState)
+tickDecoder : Decoder GameState
+tickDecoder =
+    "content" := gameStateDecoder
 
 
-parseError : String -> Decoder a
-parseError val =
+parseErrorDecoder : String -> Decoder a
+parseErrorDecoder val =
     fail ("don't know how to parse [" ++ val ++ "]")
 
 
-status : Decoder Status
-status =
+statusDecoder : Decoder Status
+statusDecoder =
     andThen
         (\x ->
             case x of
@@ -50,95 +47,97 @@ status =
                     succeed Halted
 
                 _ ->
-                    parseError x
+                    parseErrorDecoder x
         )
         string
 
 
-gameState : Decoder GameState
-gameState =
+gameStateDecoder : Decoder GameState
+gameStateDecoder =
     map2 GameState
-        ("board" := board)
-        ("status" := status)
+        ("board" := boardDecoder)
+        ("status" := statusDecoder)
 
 
-board : Decoder Board
-board =
-    map5 Board
+boardDecoder : Decoder Board
+boardDecoder =
+    map7 Board
         ("turn" := int)
-        ("snakes" := list snake)
-        ("deadSnakes" := list snake)
+        ("snakes" := list snakeDecoder)
+        ("deadSnakes" := list snakeDecoder)
         ("gameId" := int)
-        ("food" := list point)
+        ("food" := list vec2Decoder)
+        ("width" := int)
+        ("height" := int)
 
 
-point : Decoder Point
-point =
+vec2Decoder : Decoder Vec2
+vec2Decoder =
+    map2 vec2
+        (index 0 float)
+        (index 1 float)
+
+
+pointDecoder : Decoder Point
+pointDecoder =
     map2 Point
         (index 0 int)
         (index 1 int)
 
 
-point2 : Decoder Point
-point2 =
+point2Decoder : Decoder Point
+point2Decoder =
     map2 Point
         ("x" := int)
         ("y" := int)
 
 
-death : Decoder Death
-death =
-    map Death
-        ("causes" := list string)
+deathDecoder : Decoder Death
+deathDecoder =
+    decode Death
+        |> required "causes" (list string)
 
 
-snake : Decoder Snake
-snake =
-    map8 Snake
-        (maybe <| "death" := death)
-        ("color" := string)
-        ("coords" := list point)
-        ("health" := int)
-        ("id" := string)
-        ("name" := string)
-        (maybe <| "taunt" := string)
-        (maybeWithDefault defaultHeadUrl <| "headUrl" := string)
+snakeDecoder : Decoder Snake
+snakeDecoder =
+    decode Snake
+        |> optional "death" (nullable deathDecoder) Nothing
+        |> required "color" string
+        |> required "coords" (list vec2Decoder)
+        |> required "health" int
+        |> required "id" string
+        |> required "name" string
+        |> required "taunt" (maybe string)
+        |> (string
+                |> maybe
+                |> map (Maybe.withDefault "")
+                |> required "headUrl"
+           )
+        |> required "headType" string
+        |> required "tailType" string
 
 
-snake2 : Decoder Snake
-snake2 =
-    map8 Snake
-        (maybe <| "death" := death)
-        ("color" := string)
-        (at [ "body", "data" ] (list point2))
-        ("health" := int)
-        ("id" := string)
-        ("name" := string)
-        (maybe <| "taunt" := string)
-        (maybeWithDefault defaultHeadUrl <| "headUrl" := string)
-
-
-permalink : Decoder Permalink
-permalink =
+permalinkDecoder : Decoder Permalink
+permalinkDecoder =
     map3 Permalink
         ("id" := string)
         ("url" := string)
         (succeed Loading)
 
 
-database :
+databaseDecoder :
     Decoder { a | id : comparable }
     -> Decoder (Dict.Dict comparable { a | id : comparable })
-database decoder =
+databaseDecoder decoder =
     list decoder
         |> map (List.map (\y -> ( y.id, y )))
         |> map Dict.fromList
 
 
-lobby : Decoder Lobby
-lobby =
+lobbyDecoder : Decoder Lobby
+lobbyDecoder =
     map Lobby
-        ("data" := database permalink)
+        ("data" := databaseDecoder permalinkDecoder)
 
 
 gameEvent : Decoder a -> Decoder (GameEvent a)
@@ -171,9 +170,9 @@ lobbySnake =
                 ("name" := string)
                 ("taunt" := maybe string)
                 ("url" := string)
-                (maybeWithDefault defaultHeadUrl <| "headUrl" := string)
+                (maybeWithDefault "" <| "headUrl" := string)
     in
-        snakeEvent (field "data" data)
+    snakeEvent (field "data" data)
 
 
 v2 : Decoder V2
@@ -214,7 +213,7 @@ testCaseError =
                         map MultipleReasons errorWithMultipleReasons
 
                     x ->
-                        parseError x
+                        parseErrorDecoder x
             )
 
 
@@ -234,5 +233,5 @@ assertionError =
         ("id" := string)
         ("reason" := string)
         ("scenario" := scenario)
-        ("player" := snake2)
+        ("player" := snakeDecoder)
         ("world" := value)

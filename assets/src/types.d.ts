@@ -11,7 +11,7 @@ declare module "elm/Game" {
     render: Elm.Port<(raw: { content: GameState }) => void>;
   }
 
-  export const Game: Elm.App<Ports, { websocket: string }>;
+  export const Game: Elm.App<Ports, { websocket: string; gameid: string }>;
 }
 
 declare namespace Elm {
@@ -32,15 +32,6 @@ declare namespace Elm {
 type Point = [number, number];
 
 type Food = Point;
-
-type Ctx = CanvasRenderingContext2D & {
-  filter: string;
-  currentTransform: SVGMatrix;
-};
-
-type Image = HTMLImageElement;
-
-type List<T> = { length: number; item: (i: number) => T };
 
 interface Snake {
   taunt?: any;
@@ -67,8 +58,4 @@ interface Board {
   snakes: Snake[];
   turn: number;
   width: number;
-}
-
-interface TickResponse {
-  content: Board;
 }
