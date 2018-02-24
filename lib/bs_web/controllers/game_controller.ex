@@ -17,6 +17,8 @@ defmodule BsWeb.GameController do
   end
 
   def create(conn, %{"game_form" => params}) do
+    params = Map.put_new(params, "game_mode", get_game_mode(params))
+
     {:ok, game_form} =
       %GameForm{}
       |> GameForm.changeset(params)
@@ -39,11 +41,36 @@ defmodule BsWeb.GameController do
   def update(conn, %{"id" => id, "game_form" => params}) do
     game_form = BsRepo.get!(GameForm, id)
 
+    params = Map.put_new(params, "game_mode", get_game_mode(params))
+
     game_form
     |> GameForm.changeset(params)
     |> BsRepo.update()
 
     redirect(conn, to: game_path(conn, :edit, game_form))
+  end
+
+  defp get_game_mode(params) do
+    params
+    |> Map.get("snakes")
+    |> Map.to_list()
+    |> Enum.filter(fn s -> is_valid_snake(s) end)
+    |> Enum.count()
+    |> case do
+      1 -> "singleplayer"
+      _ -> "multiplayer"
+    end
+  end
+
+  def is_valid_snake({_, %{"delete" => d, "name" => n, "url" => u}}) do
+    # d = snake
+    # n = String.trim(snake["name"])
+    # u = String.trim(snake["url"])
+    if d != true && n != "" && u != "" do
+      true
+    else
+      false
+    end
   end
 
   def delete(conn, %{"id" => id}) do

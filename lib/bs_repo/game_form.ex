@@ -64,6 +64,10 @@ defmodule BsRepo.GameForm do
     |> remove_empty_snakes()
   end
 
+  def is_empty_snake(%BsWeb.SnakeForm{delete: d, name: n, url: u}) do
+    d == true && u == nil && n == nil
+  end
+
   def remove_empty_snakes(changeset) do
     changeset
     |> update_change(:snakes, &reject_deleted_snakes/1)
