@@ -63,9 +63,6 @@ defmodule BsWeb.GameController do
   end
 
   def is_valid_snake({_, %{"delete" => d, "name" => n, "url" => u}}) do
-    # d = snake
-    # n = String.trim(snake["name"])
-    # u = String.trim(snake["url"])
     if d != true && n != "" && u != "" do
       true
     else
