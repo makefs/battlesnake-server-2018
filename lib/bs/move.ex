@@ -77,7 +77,7 @@ defmodule Bs.Move do
   end
 
   @permitted [:move, :taunt]
-  @required [:move, :taunt]
+  @required [:move]
   @moves ["up", "down", "left", "right"]
 
   def changeset(model, params \\ %{})
