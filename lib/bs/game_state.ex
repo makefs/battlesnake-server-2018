@@ -142,9 +142,15 @@ defmodule Bs.GameState do
 
   defp save_history(%{world: h} = state) do
     max_history =
-      case Integer.parse(@max_history) do
-        {val, _} -> val
-        :error -> @default_max_history
+      case @max_history do
+        nil ->
+          @default_max_history
+
+        _ ->
+          case Integer.parse(@max_history) do
+            {val, _} -> val
+            :error -> @default_max_history
+          end
       end
 
     update_in(state.hist, fn t -> [h | Enum.take(t, max_history)] end)
