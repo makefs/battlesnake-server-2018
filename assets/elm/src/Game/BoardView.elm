@@ -1,15 +1,12 @@
 module Game.BoardView exposing (view)
 
 import Css exposing (hex)
-import Game.Types exposing (..)
 import Html.Styled exposing (div)
 import Math.Vector2 as V2 exposing (..)
 import Scale exposing (..)
 import Svg.Styled as Svg exposing (..)
 import Svg.Styled.Attributes as Attrs exposing (..)
-import Svg.Styled.Events exposing (..)
 import Theme exposing (theme)
-import Tuple
 import Types exposing (..)
 
 
