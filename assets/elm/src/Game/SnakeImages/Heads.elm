@@ -16,8 +16,26 @@ getSnakeHead headType =
         "fang" ->
             fang
 
+        "pixel" ->
+            pixel
+
         "regular" ->
             regular
+
+        "safe" ->
+            safe
+
+        "sand-worm" ->
+            sandworm
+
+        "shades" ->
+            shades
+
+        "smile" ->
+            smile
+
+        "tongue" ->
+            tongue
 
         _ ->
             regular
@@ -90,6 +108,61 @@ regular attrs children =
                     []
                , Svg.path
                     [ d "M0,100H100L56,55.39,100,15.5V.11L0,0ZM12.52,19.29a9.26,9.26,0,1,1-9.26,9.26A9.26,9.26,0,0,1,12.52,19.29Z" ]
+                    []
+               ]
+        )
+
+
+safe : List (Attribute msg) -> List (Svg msg) -> Svg msg
+safe attrs children =
+    g (attrs ++ [ viewBox "0 0 1 1" ])
+        (children
+            ++ [ Svg.path
+                    [ d "M50,66.64h0a4.86,4.86,0,0,1,4.86-4.86H100V35.07a35,35,0,0,0-35-35L0,0V100H65c18.49,0,33.62-10.34,34.9-28.5h-45A4.86,4.86,0,0,1,50,66.64ZM12.52,37.8a9.26,9.26,0,1,1,9.26-9.26A9.26,9.26,0,0,1,12.52,37.8Z" ]
+                    []
+               ]
+        )
+
+
+sandworm : List (Attribute msg) -> List (Svg msg) -> Svg msg
+sandworm attrs children =
+    g (attrs ++ [ viewBox "0 0 1 1" ])
+        (children
+            ++ [ Svg.polygon [ points "73.01 85.04 92.19 75.17 72.77 65.17 55.04 75.04 73.01 85.04" ] []
+               , Svg.polygon [ points "73.12 35.04 92.27 25.17 72.81 15.13 55.07 25 73.12 35.04" ] []
+               , Svg.polygon [ points "100 50 73.12 35.04 55.07 25 72.81 15.13 100 0 0 0 0 100.07 100 100.07 73.01 85.04 55.04 75.04 72.77 65.17 100 50" ] []
+               ]
+        )
+
+
+shades : List (Attribute msg) -> List (Svg msg) -> Svg msg
+shades attrs children =
+    g (attrs ++ [ viewBox "0 0 1 1" ])
+        (children
+            ++ [ Svg.polygon [ points "0 100 100 100 56.01 55.39 100 15.5 100 0.12 0 0 0 100" ] []
+               , Svg.polygon [ fill "rgba(0,0,0,0.4)", points "-14.75 -8.96 21.02 33.86 49 9.63 -14.75 -8.96" ] []
+               ]
+        )
+
+
+smile : List (Attribute msg) -> List (Svg msg) -> Svg msg
+smile attrs children =
+    g (attrs ++ [ viewBox "0 0 1 1" ])
+        (children
+            ++ [ Svg.path
+                    [ d "M75.58,58.33,64,69.91,53.42,59.33H46l-2.17-2H54.25L64,67.09,74.75,56.33H100V28.55L0,0V100L100,77.67V58.33ZM12.52,37.8a9.26,9.26,0,1,1,9.26-9.26A9.26,9.26,0,0,1,12.52,37.8Z" ]
+                    []
+               ]
+        )
+
+
+tongue : List (Attribute msg) -> List (Svg msg) -> Svg msg
+tongue attrs children =
+    g (attrs ++ [ viewBox "0 0 1 1" ])
+        (children
+            ++ [ Svg.circle [ fill "none", cx "13.16", cy "29.09", r "9.35" ] []
+               , Svg.path
+                    [ d "M87.89,56.91,98.95,45.85a3.13,3.13,0,0,0-4.42-4.42L82.17,53.78h-39L90.5,16V0H0V100l89.49.24L43.95,60H82.17L94.73,72.59a3.13,3.13,0,0,0,4.42-4.42ZM13.16,38.43a9.35,9.35,0,1,1,9.35-9.35A9.35,9.35,0,0,1,13.16,38.43Z" ]
                     []
                ]
         )
