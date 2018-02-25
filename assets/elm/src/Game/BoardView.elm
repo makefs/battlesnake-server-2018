@@ -1,9 +1,10 @@
 module Game.BoardView exposing (view)
 
 import Css exposing (hex)
+import Game.SnakeImages.Heads exposing (..)
+import Game.SnakeImages.Tails exposing (..)
 import Html.Styled exposing (div)
 import Math.Vector2 as V2 exposing (..)
-import Scale exposing (..)
 import Svg.Styled as Svg exposing (..)
 import Svg.Styled.Attributes as Attrs exposing (..)
 import Theme exposing (theme)
@@ -25,6 +26,21 @@ gridPos x_ =
     x_ |> scale |> (+) margin |> toString
 
 
+scaleVec2 : Vec2 -> Vec2
+scaleVec2 v =
+    vec2
+        (Debug.log "scaleVec" v
+            |> getX
+            |> scale
+            |> (+) margin
+        )
+        (v
+            |> getY
+            |> scale
+            |> (+) margin
+        )
+
+
 gridUnit : number
 gridUnit =
     1 |> scale |> (+) (margin * -1)
@@ -37,7 +53,7 @@ gridUnitString =
 
 gridPathOffset : Float
 gridPathOffset =
-    (scale 1 / 2) + (margin / 2)
+    (scale 1 / 2) + (margin / 2) + 10
 
 
 blockPos : Vec2 -> List (Attribute msg)
@@ -58,8 +74,8 @@ circle_ : List (Attribute msg) -> Vec2 -> Svg msg
 circle_ attrs v =
     circle
         ([ gridUnit / 2 |> toString |> r
-         , v |> getX |> scale |> toString |> cx
-         , v |> getY |> scale |> toString |> cy
+         , v |> getX |> scale |> (+) (gridUnit / 2) |> toString |> cx
+         , v |> getY |> scale |> (+) (gridUnit / 2) |> toString |> cy
          ]
             ++ attrs
         )
@@ -96,7 +112,6 @@ view board =
         [ viewBox viewBox_
         , css
             [ 1 |> Css.int |> Css.flexGrow
-            , Css.padding ms1
             , Css.maxHeight (Css.vh 90)
             ]
         ]
@@ -114,6 +129,8 @@ view board =
             [ fill <| "url(#" ++ gridPattern ++ ")"
             , width (width_ |> scale |> toString)
             , height (height_ |> scale |> toString)
+            , x "50"
+            , y "50"
             ]
             []
         , g
@@ -123,7 +140,12 @@ view board =
             , css [ Css.fill theme.food ]
             ]
             (List.map (circle_ []) food)
-        , g [] (List.concatMap snakeView (snakes ++ deadSnakes))
+        , g
+            [ vec2 gridPathOffset gridPathOffset
+                |> translate
+                |> transform
+            ]
+            (List.concatMap snakeView (snakes ++ deadSnakes))
         ]
 
 
@@ -254,21 +276,26 @@ snakeView record =
         embed transform_ part type_ { pos, dir } =
             let
                 center =
-                    vec2 0.5 0.5
+                    vec2 50 50
 
                 dir_ =
                     dir |> toTuple
             in
-            svg (blockPos pos ++ [ viewBox "0 0 1 1" ])
-                [ g (transformIcon center dir_)
+            g
+                [ transformList [ "scale(0.8)", translate (positionPos pos), iconRotation center dir_ ] ]
+                [ g []
                     [ Svg.title [] [ text (toString dir_) ]
-                    , use
-                        [ path part type_ |> xlinkHref
-                        , width "1"
-                        , height "1"
-                        , x "0"
-                        , y "0"
-                        , css [ Css.property "fill" record.color ]
+                    , (case part of
+                        "head" ->
+                            Game.SnakeImages.Heads.getSnakeHead type_
+
+                        "tail" ->
+                            Game.SnakeImages.Tails.getSnakeTail type_
+
+                        _ ->
+                            Debug.crash part
+                      )
+                        [ css [ Css.property "fill" record.color ]
                         , opacity opacityValue
                         ]
                         []
@@ -289,7 +316,7 @@ snakeView record =
                     ]
     in
     [ g
-        [ vec2 gridPathOffset gridPathOffset
+        [ vec2 (gridPathOffset - 30) (gridPathOffset - 30)
             |> translate
             |> transform
         , opacity opacityValue
@@ -297,6 +324,21 @@ snakeView record =
         [ polyline_ ]
     ]
         ++ icons
+
+
+positionPos : Vec2 -> Vec2
+positionPos pos =
+    vec2
+        (pos
+            |> getX
+            |> scale
+            |> (*) 1.25
+        )
+        (pos
+            |> getY
+            |> scale
+            |> (*) 1.25
+        )
 
 
 rotate : a -> String
@@ -339,26 +381,26 @@ transformOrigin value =
     Css.property "transform-origin" value
 
 
-transformIcon : Vec2 -> ( number, number1 ) -> List (Attribute msg)
-transformIcon center vec =
-    case vec of
+iconRotation : Vec2 -> ( number, number1 ) -> String
+iconRotation center vec =
+    case Debug.log "vec" vec of
         ( 0, 0 ) ->
-            [ transform (rotate2 -90 center) ]
+            rotate2 -90 center
 
         ( 1, 0 ) ->
-            []
+            ""
 
         ( -1, 0 ) ->
-            [ transform verticalFlip ]
+            String.join " " [ "scale(-1, 1)", translate (vec2 -100 0) ]
 
         ( -1, 1 ) ->
-            [ transform (rotate2 45 center) ]
+            rotate2 45 center
 
         ( 0, 1 ) ->
-            [ transform (rotate2 90 center) ]
+            rotate2 90 center
 
         ( 0, -1 ) ->
-            [ transform (rotate2 -90 center) ]
+            rotate2 -90 center
 
         ( _, _ ) ->
             Debug.crash (toString vec)
