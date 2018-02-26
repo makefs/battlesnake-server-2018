@@ -17,8 +17,14 @@ view : Model -> Html Msg
 view model =
     div []
         [ viewPort []
-            [ column
-                [ css [ flex auto ] ]
+            [ div
+                [ css
+                    [ displayFlex
+                    , flexDirection Css.column
+                    , alignItems center
+                    , flexGrow (int 2)
+                    ]
+                ]
                 [ model.gameState
                     |> Maybe.map .board
                     |> Maybe.map Game.BoardView.view
