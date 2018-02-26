@@ -14,46 +14,6 @@ while avoiding obstacles like walls and snakes' body.
 In BattleSnake a number of snakes are pitted against each other and the last
 snake alive wins.
 
-<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
-
-### Table of Contents
-
-- [Competitors' Guide](#competitors-guide)
-  - [Game Rules](#game-rules)
-    - [Avoid Walls](#avoid-walls)
-    - [Eat Food](#eat-food)
-    - [Don't Starve](#dont-starve)
-    - [Don't Collide with Snakes' Tails](#dont-collide-with-snakes-tails)
-    - [Head on Collisions](#head-on-collisions)
-  - [Testing Your Snake](#testing-your-snake)
-  - [API Webhooks](#api-webhooks)
-    - [POST /start](#post-start)
-      - [The StartRequest Object](#the-startrequest-object)
-      - [The StartResponse Object](#the-startresponse-object)
-      - [The HeadType Type](#the-headtype-type)
-      - [The TailType Type](#the-tailtype-type)
-      - [Example Request](#example-request)
-      - [Example Response](#example-response)
-    - [POST /move](#post-move)
-      - [The MoveResponse Object](#the-moveresponse-object)
-      - [The Move type](#the-move-type)
-      - [The World object](#the-world-object)
-      - [The Snake object](#the-snake-object)
-      - [The List object](#the-list-object)
-      - [The Point object](#the-point-object)
-      - [Example Request](#example-request-1)
-      - [Example Response](#example-response-1)
-- [Development](#development)
-  - [Running with Docker](#running-with-docker)
-  - [Networking issues](#networking-issues)
-  - [Compiling From Source](#compiling-from-source)
-    - [Dependencies](#dependencies)
-  - [Testing](#testing)
-    - [End to End Tests](#end-to-end-tests)
-    - [Unit Tests](#unit-tests)
-
-<!-- markdown-toc end -->
-
 ## Competitors' Guide
 
 ### Game Rules
