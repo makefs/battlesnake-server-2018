@@ -1,4 +1,4 @@
-# The 2018 Official Game Server [![CircleCI](https://circleci.com/gh/sendwithus/battlesnake-server.svg?style=svg)](https://circleci.com/gh/sendwithus/battlesnake-server)
+# The 2018 Official Game Server
 
 [![BattleSnake 2018 Logo](./docs/images/logo-18.png)](https://www.battlesnake.io/)
 
@@ -212,7 +212,6 @@ type TailType =
     "color": "#FF0000",
     "secondary_color": "#00FF00",
     "head_url": "http://placecage.com/c/100/100",
-    "name": "Cage Snake", // the name will be ignored by the server and the name used on game create is used now
     "taunt": "OH GOD NOT THE BEES",
     "head_type": "pixel",
     "tail_type": "pixel"
@@ -425,14 +424,7 @@ docker run -it -p 3000:3000 sendwithus/battlesnake-server
 
 You should be able to view the game server at <http://localhost:3000>.
 
-### Networking issues
-
-If you are running your snake on localhost, you won't be able to reference it as
-`localhost` because the container runs on its own network. If you're running
-Docker For Mac you can reference localhost:5678 with
-<http://docker.for.mac.localhost:5678/>, otherwise use your full ip address on
-your network to reference your localhost (192.168.1.xxx or whatever your subnet
-is configured for, use ifconfig to find out).
+**NOTE**: If you are running your snake on localhost or on the same local machine where you're running the game server, you won't be able to reference it as `localhost` in the game setup UI because the game server docker container runs on its own network. What this means for you is that you will need to use your computer's IP address (something like `http://192.168.1.10:<port>`) as your snake URL in order to add it to a game and not `http://localhost:<port>`.
 
 ### Compiling From Source
 
@@ -443,7 +435,7 @@ is configured for, use ifconfig to find out).
 - [NPM](http://blog.npmjs.org/post/85484771375/how-to-install-npm)
 - [Yarn](https://yarnpkg.com/lang/en/docs/install)
 
-#### MacOSX
+#### OS X/macOS
 
 ```sh
 brew update && brew install erlang elixir nodejs yarn
@@ -451,7 +443,7 @@ brew update && brew install erlang elixir nodejs yarn
 
 #### Linux
 
-I suggest installing Erlang through [evm](https://github.com/robisonsantos/evm)
+You should manage Erlang through [evm](https://github.com/robisonsantos/evm)
 and Elixir through [kiex](https://github.com/taylor/kiex).
 
 ```sh
