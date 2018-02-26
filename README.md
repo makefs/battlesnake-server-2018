@@ -307,7 +307,7 @@ endpoint on each turn. The game server expects a JSON response within 200ms.
 ### POST `/end`
 
 A request including all the current game information will be issued to this
-endpoint on each turn. The game server expects a JSON response within 200ms.
+endpoint on each turn.
 
 Possible death causes are:
 
