@@ -29,7 +29,7 @@ gridPos x_ =
 scaleVec2 : Vec2 -> Vec2
 scaleVec2 v =
     vec2
-        (Debug.log "scaleVec" v
+        (v
             |> getX
             |> scale
             |> (+) margin
