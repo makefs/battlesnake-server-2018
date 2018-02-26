@@ -7,6 +7,8 @@ defmodule Bs.GameState do
   @default_max_history 20
   @max_history Application.get_env(:bs, :max_history, 20)
 
+  @http Application.get_env(:bs, :http)
+
   @statuses [:cont, :replay, :halted, :suspend]
 
   defstruct [
@@ -174,6 +176,34 @@ defmodule Bs.GameState do
     state = set_winners(state)
     state = put_in(state.done?, true)
     send_game_done()
+
+    {:ok, sup} = Task.Supervisor.start_link()
+
+    stream =
+      Task.Supervisor.async_stream_nolink(
+        sup,
+        Enum.concat(state.world.snakes, state.world.dead_snakes),
+        fn snake ->
+          view =
+            Phoenix.View.render(
+              BsWeb.EndView,
+              "show.json",
+              deadSnakes: state.world.dead_snakes,
+              winners: state.winners,
+              gameId: state.world.game_id
+            )
+
+          data = Poison.encode!(view)
+
+          :timer.tc(@http, :post!, [
+            "#{snake.url}/end",
+            data,
+            ["Content-Type": "application/json"]
+          ])
+        end
+      )
+
+    Enum.to_list(stream)
     state
   end
 

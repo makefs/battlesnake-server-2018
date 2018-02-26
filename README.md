@@ -117,85 +117,46 @@ if it follows all the basic game rules.
 
 All interactions with the game are implemented as HTTP POST webhooks. Once the
 game has begun your server will receive a request to your `/start` endpoint, and
-then on each turn a request to the `/move` endpoint.
+then on each turn a request to the `/move` endpoint. When a game has completed and the last move has been processed, a request to the `/end` endpoint will be made with information about which snake won, dead snakes, and death reasons.
 
-### POST /start
+### POST `/start`
 
-|                        |                                                    |
-|------------------------|----------------------------------------------------|
-| URL                    | /start                                             |
-| Method                 | POST                                               |
-| request body JSON      | ![StartRequest](#the-startrequest-object) object   |
-| expected response JSON | ![StartResponse](#the-startresponse-object) object |
+A request including the `game_id` will be issued to this endpoint to signify the start of a new game. The game server expects a JSON response with some information about your snake in order to start the game.
 
-#### The StartRequest Object
+You can customise your snake with a head and tail type from the lists below:
 
-```typescript
-interface StartRequest {
-  game_id: number;
-}
-```
-
-#### The StartResponse Object
-
-```typescript
-interface StartResponse {
-  /**
-   * What color your snake should be on the board.
-   * Accepts any valid CSS color.
-   * https://developer.mozilla.org/en-US/docs/Web/CSS/color
-   */
-  color: string;
-  name: string; // the name will be ignored by the server and the name used on game create is used now
-  /**
-   * URL of the image to display as your avatar.
-   */
-  head_url: string;
-  taunt: string;
-  head_type: HeadType;
-  tail_type: TailType;
-  secondary_color: string;
-}
-```
-
-#### The HeadType Type
+#### Head Types
 
 String referring to what head image should be used for your snake.
 
 Renders one of the matching images in [this directory](./assets/static/images/snake/head/).
 
-```typescript
-type HeadType =
-  | 'bendr'
-  | 'dead'
-  | 'fang'
-  | 'pixel'
-  | 'regular'
-  | 'safe'
-  | 'sand-worm'
-  | 'shades'
-  | 'smile'
-  | 'tongue';
-```
+- `bendr`
+- `dead`
+- `fang`
+- `pixel`
+- `regular`
+- `safe`
+- `sand-worm`
+- `shades`
+- `smile`
+- `tongue`
 
-#### The TailType Type
+#### Tail Types
 
 String referring to what tail image should be used for your snake.
 
 Renders one of the matching images in [this directory](./assets/static/images/snake/tail/).
 
-```typescript
-type TailType =
-  | 'block-bum'
-  | 'curled'
-  | 'fat-rattle'
-  | 'freckled'
-  | 'pixel'
-  | 'regular'
-  | 'round-bum'
-  | 'skinny'
-  | 'small-rattle'
-```
+- `block-bum`
+- `curled`
+- `fat-rattle`
+- `freckled`
+- `pixel`
+- `regular`
+- `round-bum`
+- `skinny`
+- `small-rattle`
 
 #### Example `/start` Request
 
@@ -218,81 +179,12 @@ type TailType =
 }
 ```
 
-### POST /move
+### POST `/move`
 
 A request including all the current game information will be issued to this
 endpoint on each turn. The game server expects a JSON response within 200ms.
 
-|                        |                                              |
-|------------------------|----------------------------------------------|
-| URL                    | /move                                        |
-| Method                 | POST                                         |
-| request body JSON      | ![World](#the-world-object) object           |
-| expected response JSON | ![Response](#the-moveresponse-object) object |
-
-#### The MoveResponse Object
-
-```typescript
-interface MoveResponse {
-  move: Move;
-}
-```
-
-#### The Move type
-
-```typescript
-type Move = 'up' | 'down' | 'left' | 'right';
-```
-
-#### The World object
-
-```typescript
-interface World {
-  object: 'world';
-  id: number;
-  you: Snake;
-  snakes: List<Snake>;
-  height: number;
-  width: number;
-  turn: number;
-  food: List<Point>;
-}
-```
-
-#### The Snake object
-
-```typescript
-interface Snake {
-  body: List<Point>;
-  health: number;
-  id: string;
-  length: number;
-  name: string;
-  object: 'snake';
-  taunt: string;
-}
-```
-
-#### The List object
-
-```typescript
-interface List<T> {
-  object: 'list';
-  data: T[];
-}
-```
-
-#### The Point object
-
-```typescript
-interface Point {
-  object: 'point';
-  x: number;
-  y: number;
-}
-```
-
-#### Example Request
+#### Example `/move` Request
 
 ```json
 {
@@ -403,13 +295,50 @@ interface Point {
 }
 ```
 
-#### Example Response
+#### Example `/move` Response
 
 ```json
 {
   "move": "up"
 }
 ```
+
+### POST `/end`
+
+A request including all the current game information will be issued to this
+endpoint on each turn.
+
+Possible death causes are:
+
+- `body collision`
+- `head collision`
+- `self collision`
+- `starvation`
+- `wall collision`
+
+#### Example `/end` Request
+
+```json
+{
+  "game_id": 10,
+  "winners": [ "a46b558b-f31b-418f-bb07-6017dd91f653" ],
+  "dead_snakes": {
+    "object": "list",
+    "data": {
+      "id": "4a35fd1c-434b-431b-839c-edf958d67e9a",
+      "length": 3,
+      "death": {
+        "turn": 4,
+        "causes": ["self collision"]
+      }
+    }
+  }
+}
+```
+
+#### Example `/end` Response
+
+Simply return a 200 OK response, the server will stop processing this game moving forward.
 
 ## Development
 
