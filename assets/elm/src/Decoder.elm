@@ -106,7 +106,7 @@ snakeDecoder =
         |> required "coords" (list vec2Decoder)
         |> required "health" int
         |> required "id" string
-        |> required "name" string
+        |> optional "name" string ""
         |> required "taunt" (maybe string)
         |> (string
                 |> maybe
