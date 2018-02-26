@@ -125,6 +125,7 @@ defmodule Bs.World.Factory.Worker do
   def run(permalink, gameid, opts \\ [])
 
   def run(%{id: id, url: url, name: name}, gameid, data) do
+    url = String.trim(url, "/")
     start_url = "#{url}/start"
 
     {tc, response} =
@@ -152,7 +153,7 @@ defmodule Bs.World.Factory.Worker do
         {:error, _, _} -> %{}
       end
 
-    model = %Snake{url: String.trim(url, "/"), id: id, name: name}
+    model = %Snake{url: url, id: id, name: name}
 
     changeset = Snake.changeset(model, json)
 
