@@ -9,7 +9,7 @@ defmodule BsWeb.EndView do
         gameId: gameId
       }) do
     %{
-      gameId: gameId,
+      game_id: gameId,
       winners: winners,
       deadSnakes: %{
         object: :list,
