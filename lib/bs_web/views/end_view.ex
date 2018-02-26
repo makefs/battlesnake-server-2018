@@ -11,7 +11,7 @@ defmodule BsWeb.EndView do
     %{
       game_id: gameId,
       winners: winners,
-      deadSnakes: %{
+      dead_snakes: %{
         object: :list,
         data:
           Enum.map(deadSnakes, fn snake ->
