@@ -117,7 +117,7 @@ sidebar model =
     column
         [ css
             [ padding ms1
-            , minWidth theme.sidebarWidth
+            , Css.width theme.sidebarWidth
             , justifyContent spaceBetween
             , overflowWrap breakWord
             , sidebarTheme
