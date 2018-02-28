@@ -310,10 +310,10 @@ You can run the official BattleSnake game server through Docker, allowing you to
 
 ```sh
 docker pull sendwithus/battlesnake-server
-docker run -it -p 3000:3000 sendwithus/battlesnake-server
+docker run --rm -it -p 3000:3000 sendwithus/battlesnake-server
 ```
 
-You should be able to view the game server at <http://localhost:3000>.
+You can then view the game server at <http://localhost:3000>.
 
 **NOTE**: If you are running your snake on localhost or on the same local machine where you're running the game server, you won't be able to reference it as `localhost` in the game setup UI because the game server docker container runs on its own network. What this means for you is that you will need to use your computer's IP address (something like `http://192.168.1.10:<port>`) as your snake URL in order to add it to a game and not `http://localhost:<port>`.
 
