@@ -122,7 +122,9 @@ Renders one of the matching images in [this directory](./assets/static/images/sn
 
 ```json
 {
-  "game_id": 1
+  "game_id": 1,
+  "width": 20,
+  "height": 20
 }
 ```
 
