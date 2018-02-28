@@ -286,14 +286,14 @@ Possible death causes are:
   "winners": [ "a46b558b-f31b-418f-bb07-6017dd91f653" ],
   "dead_snakes": {
     "object": "list",
-    "data": {
+    "data": [{
       "id": "4a35fd1c-434b-431b-839c-edf958d67e9a",
       "length": 3,
       "death": {
         "turn": 4,
         "causes": ["self collision"]
       }
-    }
+    }]
   }
 }
 ```
