@@ -13,25 +13,43 @@ import Theme exposing (..)
 import Types exposing (..)
 
 
+replace : String -> String -> String -> String
+replace search replace str =
+    String.split search str
+        |> String.join replace
+
+
 view : Model -> Html Msg
 view model =
-    div []
+    div
+        [ css
+            [ Css.backgroundImage (url (replace " " "%20" assets.background))
+            , Css.backgroundSize (pct 100)
+            ]
+        ]
         [ viewPort []
             [ div
                 [ css
                     [ displayFlex
                     , flexDirection Css.column
                     , alignItems center
-                    , flexGrow (int 2)
+                    , flexGrow (Css.int 3)
                     ]
                 ]
                 [ model.gameState
                     |> Maybe.map .board
                     |> Maybe.map Game.BoardView.view
                     |> Maybe.withDefault (text "")
-                , column [ css [ flexGrow (int 0) ] ]
-                    [ div [ css [ alignSelf center ] ] [ text (turn model) ]
-                    , avControls []
+                , div
+                    [ css
+                        [ displayFlex
+                        , flexGrow (int 0)
+                        , flexDirection Css.row
+                        , justifyContent spaceBetween
+                        , Css.width (Css.pct 90)
+                        ]
+                    ]
+                    [ avControls []
                         [ btn
                             [ onClick (Push PrevStep)
                             , title "Previous turn (k)"
@@ -49,11 +67,24 @@ view model =
                             ]
                             [ mdSkipNext ]
                         ]
+                    , div [ css [ alignSelf center ] ]
+                        [ text ("Turn " ++ turn model)
+                        , textSpacer
+                        , a [ href <| editGamePath model.gameid ] [ text "Edit" ]
+                        , textSpacer
+                        , a [ href <| gamesPath ] [ text "Games" ]
+                        ]
                     ]
                 ]
             , sidebar model
             ]
         ]
+
+
+textSpacer : Html msg
+textSpacer =
+    span [ css [ paddingLeft (px 10), paddingRight (px 10) ] ]
+        [ text "|" ]
 
 
 board : Model -> Html msg
@@ -79,25 +110,24 @@ sidebar model =
                         , css
                             [ Css.maxWidth (px 300)
                             , Css.display Css.block
-                            , Css.marginLeft Css.auto
-                            , Css.marginRight Css.auto
                             , Css.marginTop Css.zero
                             , Css.marginBottom Css.zero
                             ]
                         ]
                         []
-                    , img
-                        [ src assets.logoExpert
-                        , css
-                            [ Css.maxHeight (px 100)
-                            , Css.display Css.block
-                            , Css.marginLeft Css.auto
-                            , Css.marginRight Css.auto
-                            , Css.marginTop Css.zero
-                            , Css.marginBottom ms2
-                            ]
-                        ]
-                        []
+
+                    -- , img
+                    --     [ src assets.logoExpert
+                    --     , css
+                    --         [ Css.maxHeight (px 100)
+                    --         , Css.display Css.block
+                    --         , Css.marginLeft Css.auto
+                    --         , Css.marginRight Css.auto
+                    --         , Css.marginTop Css.zero
+                    --         , Css.marginBottom ms2
+                    --         ]
+                    -- ]
+                    -- []
                     ]
                 ]
 
@@ -117,18 +147,12 @@ sidebar model =
     column
         [ css
             [ padding ms1
-            , Css.width theme.sidebarWidth
+            , Css.width (pct 45)
             , justifyContent spaceBetween
-            , overflowWrap breakWord
-            , sidebarTheme
             ]
         ]
         [ sidebarLogo
         , content
-        , sidebarControls []
-            [ a [ href <| editGamePath model.gameid ] [ text "Edit" ]
-            , a [ href <| gamesPath ] [ text "Games" ]
-            ]
         ]
 
 

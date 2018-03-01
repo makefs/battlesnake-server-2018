@@ -111,9 +111,7 @@ view board =
     svg
         [ viewBox viewBox_
         , css
-            [ 1 |> Css.int |> Css.flexGrow
-            , Css.maxHeight (Css.vh 90)
-            ]
+            [ 1 |> Css.int |> Css.flexGrow ]
         ]
         [ defs []
             [ pattern
@@ -123,7 +121,7 @@ view board =
                 , width (1.0 / toFloat width_ |> toString)
                 , height (1.0 / toFloat height_ |> toString)
                 ]
-                [ square [ fill theme.tile.value ] (vec2 0 0) ]
+                [ square [ fill theme.tile.value, opacity "0.25" ] (vec2 0 0) ]
             ]
         , rect
             [ fill <| "url(#" ++ gridPattern ++ ")"
@@ -383,7 +381,7 @@ transformOrigin value =
 
 iconRotation : Vec2 -> ( number, number1 ) -> String
 iconRotation center vec =
-    case Debug.log "vec" vec of
+    case vec of
         ( 0, 0 ) ->
             rotate2 -90 center
 
