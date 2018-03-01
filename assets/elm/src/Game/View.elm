@@ -289,7 +289,7 @@ row =
 
 viewPort : List (Attribute msg) -> List (Html msg) -> Html msg
 viewPort =
-    styled row [ Css.height (vh 100), Css.width (vw 100) ]
+    styled row [ Css.height (vh 100) ]
 
 
 avControls : List (Attribute msg) -> List (Html msg) -> Html msg
