@@ -161,7 +161,9 @@ defmodule Bs.Death do
 
       Stream.map(snakes, fn other ->
         cond do
-          other.id != snake.id and head == hd(other.coords) and
+          other.id != snake.id and 
+              (head == hd(other.coords) 
+               or (length(snake.coords) > 1 and length(other.coords) > 1 and hd(tl(snake.coords)) == hd(other.coords) and head == hd(tl(other.coords)))) and
               length(snake.coords) <= length(other.coords) ->
             %HeadCollisionCause{with: other.id}
 
