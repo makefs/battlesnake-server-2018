@@ -44,6 +44,11 @@
     <%= label @form, "Pin tail" %>
     <%= checkbox @form, :pin_tail %>
   </div>
+
+  <div>
+    <%= label @form, "Division" %>
+    <%= text_input @form, :division %>
+  </div>
 </fieldset>
 
 <fieldset>

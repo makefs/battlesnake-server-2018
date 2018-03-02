@@ -22,6 +22,7 @@ defmodule BsRepo.GameForm do
     field(:recv_timeout, :integer, default: 200)
     field(:dec_health_points, :integer, default: 1)
     field(:pin_tail, :boolean, default: false)
+    field(:division, :string, default: "")
   end
 
   @required [
@@ -45,7 +46,8 @@ defmodule BsRepo.GameForm do
     :recv_timeout,
     :width,
     :dec_health_points,
-    :pin_tail
+    :pin_tail,
+    :division
   ]
 
   def changeset(game, params \\ %{}) do

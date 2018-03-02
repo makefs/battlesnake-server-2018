@@ -16,7 +16,8 @@ defmodule Bs.World.Factory do
       width: game.width,
       game_form_id: id,
       dec_health_points: game.dec_health_points,
-      pin_tail: game.pin_tail
+      pin_tail: game.pin_tail,
+      division: game.division
     }
 
     data =
