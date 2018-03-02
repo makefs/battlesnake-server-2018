@@ -26,6 +26,7 @@ defmodule Bs.World do
     field(:game_id, :any, default: 0, virtual: true)
     field(:dec_health_points, :any, default: 1, virtual: true)
     field(:pin_tail, :any, default: false, virtual: true)
+    field(:division, :any, default: "", virtual: true)
   end
 
   @doc """

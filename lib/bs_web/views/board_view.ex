@@ -34,7 +34,8 @@ defmodule BsWeb.BoardView do
       height: world.height,
       snakes: snakes.(world.snakes),
       turn: world.turn,
-      width: world.width
+      width: world.width,
+      division: world.division
     }
   end
 end

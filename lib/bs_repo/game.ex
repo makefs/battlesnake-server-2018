@@ -13,6 +13,7 @@ defmodule BsRepo.Game do
     field(:width, :integer, default: 20)
     field(:dec_health_points, :integer, default: 1)
     field(:pin_tail, :boolean, default: false)
+    field(:division, :string, default: "")
 
     timestamps()
   end
@@ -37,7 +38,8 @@ defmodule BsRepo.Game do
     :recv_timeout,
     :width,
     :dec_health_points,
-    :pin_tail
+    :pin_tail,
+    :division
   ]
 
   def changeset(model, params \\ %{}) do
