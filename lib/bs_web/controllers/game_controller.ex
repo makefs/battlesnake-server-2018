@@ -62,6 +62,10 @@ defmodule BsWeb.GameController do
     end
   end
 
+  def is_valid_snake({_, _}) do
+    false
+  end
+
   def is_valid_snake({_, %{"delete" => d, "name" => n, "url" => u}}) do
     if d != true && n != "" && u != "" do
       true
