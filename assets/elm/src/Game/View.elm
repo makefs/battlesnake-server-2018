@@ -304,9 +304,8 @@ snake alive snake =
                 ]
             , div
                 [ css
-                    [ maxWidth theme.sidebarWidth
+                    [ maxWidth (vw 36)
                     , paddingLeft ms0
-                    , paddingBottom ms_1
                     , color palette.medgrey
                     , whiteSpace Css.noWrap
                     , textOverflow ellipsis
