@@ -100,6 +100,7 @@ defmodule Bs.Movement.Worker do
       |> case do
         {:ok, j} -> j
         {:error, _, _} -> %{}
+        _ -> %{}
       end
 
     changeset = Move.changeset(%Move{}, params)
