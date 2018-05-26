@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const node = document.getElementById("gameapp");
   if (!node) return;
 
-  const websocket = `ws://${window.location.host}/socket/websocket`;
+  const websocket = `wss://${window.location.host}/socket/websocket`;
   const gameid = node.dataset.gameid;
   if (!gameid) return;
 
